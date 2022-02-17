@@ -17,11 +17,11 @@ The application can be opened in 2 different browsers. Both browser windows can 
 
 ## Screenshots
 
-<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451504-222558c1-0fb7-45f3-9af2-b4e8bc7eb2ba.png">
+<img width="480" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451504-222558c1-0fb7-45f3-9af2-b4e8bc7eb2ba.png">
 
-<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png">
+<img width="480" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png">
 
-<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154456205-dbbd6c09-93eb-43eb-b7fc-756a6413a84c.png">
+<img width="480" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154456205-dbbd6c09-93eb-43eb-b7fc-756a6413a84c.png">
 
 
 ## Project setup
