@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <h1>Calls</h1>
+  </div>
 </template>
 
 <script lang = "ts">
@@ -7,6 +9,8 @@ import Vue from 'vue'
 
 export default Vue.extend(
     {
-      name: 'Home',
+      name: 'Calls',
+
+      components: {},
     })
 </script>

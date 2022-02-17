@@ -1,32 +1,37 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <!--system bar/status bar-->
+    <system-bar/>
+
+    <!--top tabs-->
+    <app-bar/>
+
+    <!--router view-->
+    <v-main>
+      <router-view/>
+    </v-main>
+
+  </v-app>
 </template>
 
-<style lang="scss">
+<script lang = "ts">
+import Vue from 'vue';
+import AppBar from "@/components/AppBar.vue";
+import SystemBar from "@/components/SystemBar.vue";
+
+export default Vue.extend(
+    {
+      name      : 'App',
+      components: {SystemBar, AppBar},
+      // data      : () => ({}),
+    });
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang = "scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+  font-family             : $roboto;
+  -webkit-font-smoothing  : antialiased;
+  -moz-osx-font-smoothing : grayscale;
 }
 </style>

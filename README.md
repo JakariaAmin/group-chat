@@ -1,34 +1,62 @@
 # group-chat
 
+It's a PWA live group chat web application using VueJS 2 framework.
+
+The user interface is close to WhatsApp anddroid version.
+
+The application can be opened in 2 different browsers. Both browser windows can send & receive text messages as different users, in real-time without refreshing the page.
+
+## Technologies
+
+- [Vue JS 2](https://github.com/vuejs/vue)
+- [Vuetify](https://vuetifyjs.com/en)
+- [Firebase](https://www.npmjs.com/package/firebase)
+- [Vuex](https://vuex.vuejs.org)
+- [Vue-I18n](https://kazupon.github.io/vue-i18n)
+- [http-server](https://github.com/http-party/http-server)
+
 ## Project setup
+
 ```
 yarn install
 ```
 
+### Run in PWA mode
+
+```
+npm run build && npx http-server dist
+```
+
 ### Compiles and hot-reloads for development
+
 ```
 yarn serve
 ```
 
 ### Compiles and minifies for production
+
 ```
 yarn build
 ```
 
 ### Run your unit tests
+
 ```
 yarn test:unit
 ```
 
 ### Run your end-to-end tests
+
 ```
 yarn test:e2e
 ```
 
 ### Lints and fixes files
+
 ```
 yarn lint
 ```
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).
