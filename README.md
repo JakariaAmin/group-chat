@@ -15,6 +15,13 @@ The application can be opened in 2 different browsers. Both browser windows can 
 - [Vue-I18n](https://kazupon.github.io/vue-i18n)
 - [http-server](https://github.com/http-party/http-server)
 
+## Screenshots
+
+![192 168 68 50_8080_chats(Samsung Galaxy S20 Ultra)](https://user-images.githubusercontent.com/11033159/154451504-222558c1-0fb7-45f3-9af2-b4e8bc7eb2ba.png)
+
+![192 168 68 50_8080_chats(Samsung Galaxy S20 Ultra) (1)](https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png)
+
+
 ## Project setup
 
 ```
