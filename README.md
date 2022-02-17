@@ -17,11 +17,11 @@ The application can be opened in 2 different browsers. Both browser windows can 
 
 ## Screenshots
 
-![Samsung Galaxy S20 Ultra](https://user-images.githubusercontent.com/11033159/154451504-222558c1-0fb7-45f3-9af2-b4e8bc7eb2ba.png | width=600)
+<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451504-222558c1-0fb7-45f3-9af2-b4e8bc7eb2ba.png">
 
-![Samsung Galaxy S20 Ultra](https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png | width=600)
+<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png">
 
-<img width="600" alt="Screenshot 2022-02-17 at 6 22 42 PM" src="https://user-images.githubusercontent.com/11033159/154456205-dbbd6c09-93eb-43eb-b7fc-756a6413a84c.png">
+<img width="600" alt="Screenshot" src="https://user-images.githubusercontent.com/11033159/154456205-dbbd6c09-93eb-43eb-b7fc-756a6413a84c.png">
 
 
 ## Project setup
