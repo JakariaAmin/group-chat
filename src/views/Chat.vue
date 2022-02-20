@@ -4,29 +4,84 @@
     <app-bar-chat/>
 
     <!--chat list-->
-    <v-list>
-      <template v-for = "(item, index) in $store.state.chat.chats">
-        <!--section: message and time-->
-        <v-list-item
-            :key = "item.id"
+    <DynamicScroller
+        :items = "$store.state.chat.chats"
+        :min-item-size = "100"
+        class = "my-list"
+        ref = "scroller"
+        @scroll.native.passive = "handleScroll"
+    >
+      <template v-slot = "{ item, index, active }">
+        <DynamicScrollerItem
+            :item = "item"
+            :active = "active"
+            :size-dependencies = "[item.message]"
+            :data-index = "index"
             :class = "[
-                'chat-item',
-                item.user.id === $store.state.user.id && 'chat-item-own',
-                ($store.state.chat.chats[index - 1] && item.user.id !== $store.state.chat.chats[index - 1].user.id) && 'chat-item-margin'
-            ]"
+                    'message-container',
+                    item.user.id === $store.state.user.id ? 'sent' : 'received',
+                   (index === 0 || ($store.state.chat.chats[index - 1] && item.user.id !== $store.state.chat.chats[index - 1].user.id)) && 'message-container-margin'
+                ]"
         >
-          <div class = "chat-message">{{ item.message }}</div>
+          <div class = "message">{{ item.message }} [{{ index }}]</div>
 
-          <!--section: time and status-->
-          <div class = "chat-time-status">
-            <div class = "chat-time">{{ item.timestamp }}</div>
-            <my-image v-if = "item.user.id === $store.state.user.id" :src = "getStatusImage(item.status)" classes = "chat-status"/>
+          <!--section: time and status image-->
+          <div class = "message-time-status">
+            <div class = "message-time">{{ item.timestamp }}</div>
+
+            <my-image
+                v-if = "item.user.id === $store.state.user.id"
+                :src = "getStatusImage(item.status)"
+                classes = "message-status"
+            />
           </div>
-
-        </v-list-item>
-
+        </DynamicScrollerItem>
       </template>
-    </v-list>
+
+      <!--      <template #before>
+              <div v-intersect = "onIntersect"/>
+            </template>-->
+    </DynamicScroller>
+
+    <!--    <virtual-list
+            ref = "vsl"
+            :data-key = "'id'"
+            :data-items = "$store.state.chat.chats"
+            :data-component = "itemComponent"
+            :tobottom = "onScrollToBottom"
+            class = "virtual-list"
+            :item-class = "'virtual-list-item'"
+        />-->
+
+    <!--chat list-->
+    <!--    <v-list>
+          <template v-for = "(item, index) in $store.state.chat.chats">
+            &lt;!&ndash;section: message and time&ndash;&gt;
+            <v-list-item
+                :key = "item.id"
+                :class = "[
+                    'message-container',
+                    item.user.id === $store.state.user.id ? 'sent' : 'received',
+                   (index === 0 || ($store.state.chat.chats[index - 1] && item.user.id !== $store.state.chat.chats[index - 1].user.id)) && 'message-container-margin'
+                ]"
+            >
+              <div class = "message">{{ item.message }}</div>
+
+              &lt;!&ndash;section: time and status&ndash;&gt;
+              <div class = "message-time-status">
+                <div class = "message-time">{{ item.timestamp }}</div>
+
+                <my-image
+                    v-if = "item.user.id === $store.state.user.id"
+                    :src = "getStatusImage(item.status)"
+                    classes = "message-status"
+                />
+              </div>
+
+            </v-list-item>
+
+          </template>
+        </v-list>-->
 
     <!--bottom section consists of message send text input and icons-->
     <div class = "bottom-section">
@@ -34,27 +89,42 @@
       <!--text input container with icons-->
       <div class = "text-input-container">
         <!--emoji btn-->
-        <v-btn icon @click = "snackbar = true">
-          <my-image src = "emoji_people.png"/>
+        <v-btn icon>
+          <my-image src = "emoji_people.png" classes = "img-emoji"/>
         </v-btn>
 
         <!--text input to send message-->
         <input v-model = "message" :placeholder = "$vuetify.lang.t('$vuetify.Message')">
 
         <!--attachment btn-->
-        <v-btn icon @click = "snackbar = true">
+        <v-btn
+            icon
+            @click = "snackbar = true"
+            v-show = "!message || !message.length"
+        >
           <my-image src = "ib_attach.png"/>
         </v-btn>
 
         <!--camera btn-->
-        <v-btn icon @click = "snackbar = true">
+        <v-btn
+            icon
+            @click = "snackbar = true"
+        >
           <my-image src = "ic_camera.png"/>
         </v-btn>
       </div>
 
       <!--mic button to record audio message-->
-      <v-btn icon rounded color = "white" x-large elevation = "2" class = "btn-mic">
-        <my-image src = "ic_mic.png"/>
+      <v-btn
+          icon
+          rounded
+          color = "white"
+          x-large
+          elevation = "2"
+          :class = "[message && message.length ? 'btn-send' : 'btn-mic']"
+          @click = "sendMessage"
+      >
+        <my-image :src = "message && message.length ? 'ic_icebreaker_send.png' : 'ic_mic.png'"/>
       </v-btn>
     </div>
 
@@ -68,6 +138,17 @@
     >
       {{ $vuetify.lang.t('$vuetify.FeatureNotReadyYet') }}
     </v-snackbar>
+
+    <!--emoji picker plugin-->
+    <!--    <twemoji-picker-->
+    <!--        :emojiData = "emojiDataAll"-->
+    <!--        :emojiGroups = "emojiGroups"-->
+    <!--        :skinsSelection = "false"-->
+    <!--        :searchEmojisFeat = "true"-->
+    <!--        searchEmojiPlaceholder = "Search here."-->
+    <!--        searchEmojiNotFound = "Emojis not found."-->
+    <!--        isLoadingLabel = "Loading..."-->
+    <!--    ></twemoji-picker>-->
   </div>
 
 </template>
@@ -75,8 +156,19 @@
 <script lang = "ts">
 import Vue from "vue";
 import AppBarChat from "@/components/appbar/Chat.vue";
-import MyImage from "@/components/MyImage.vue";
 import {ChatStatus} from "@/data/enum/ChatStatus";
+import Chat from "@/data/interface/Chat";
+import moment from "moment";
+import MyImage from "@/components/MyImage.vue";
+import User from "@/data/interface/User";
+import {randomMessages} from "@/data/mock/Messages";
+
+/*import {TwemojiPicker} from '@kevinfaguiar/vue-twemoji-picker';
+import EmojiAllData from '@kevinfaguiar/vue-twemoji-picker/emoji-data/en/emoji-all-groups.json';
+import EmojiDataAnimalsNature from '@kevinfaguiar/vue-twemoji-picker/emoji-data/en/emoji-group-animals-nature.json';
+import EmojiDataFoodDrink from '@kevinfaguiar/vue-twemoji-picker/emoji-data/en/emoji-group-food-drink.json';
+import EmojiGroups from '@kevinfaguiar/vue-twemoji-picker/emoji-data/emoji-groups.json';*/
+
 
 export default Vue.extend(
     {
@@ -89,14 +181,37 @@ export default Vue.extend(
         message : '',
 
         timeout : 0, // timeout id.
-        duration: 3000, // how long user should stay on screen before statues set to unread.
+        duration: 2000, // how long user should stay on screen before statues set to unread.
+
+        allLoaded  : false, // scroll event will stop once set to true.
+        loadingMore: false, // set to true when more data is loading.
+
+        // message timestamp start time set to 1 year earlier:
+        timestampStart: moment().subtract(12, 'months')
       }),
+
+      /*computed: {
+        emojiDataAll() {
+          return EmojiAllData;
+        },
+        emojiGroups() {
+          return EmojiGroups;
+        }
+      },*/
 
       mounted() {
         // set all unread message to read once user open screen stays for [this.duration] screen:
         this.timeout = setTimeout(() => {
-          this.$store.dispatch('chat/setRead');
+          const user: User = this.$store.state.user;
+
+          this.$store.dispatch('chat/setRead', user.id);
         }, this.duration);
+
+        console.log('chats: ', {length: this.$store.state.chat.chats?.length});
+
+        // await new Promise((r) => setTimeout(r, 0))
+
+        this.scrollToBottom();
       },
 
       beforeDestroy() {
@@ -107,6 +222,32 @@ export default Vue.extend(
       },
 
       methods: {
+        // send message function:
+        sendMessage() {
+          if (this.message && this.message.length) {
+            // create chat object:
+            const chat: Chat = {
+              id       : this.uuidv4(),
+              message  : this.message,
+              timestamp: moment().format('h:mm a'),
+              status   : ChatStatus.sent,
+              user     : this.$store.state.user,
+            };
+
+            // store chats data in vuex store:
+            this.$store.dispatch('chat/pushChat', chat)
+                .then(() => {
+                  this.message = '';
+                  this.scrollToBottom();
+
+                  console.log('sendMessage: ', {length: this.$store.state.chat.chats?.length});
+                });
+
+          } else {
+            this.snackbar = true;
+          }
+        },
+
         // get chat status arrow image based on chat status:
         getStatusImage(status: string) {
           switch (status) {
@@ -121,101 +262,217 @@ export default Vue.extend(
               return 'message_got_receipt_from_server.png';
 
           }
-        }
+        },
+
+        // handleScroll:
+        handleScroll(e: {target: any;}) {
+          // onIntersect(e: any) {
+
+          // stop adding new chats once it reaches 5000:
+          if (!this.loadingMore && this.$store.state.chat.chats?.length < 5000) {
+            console.log('handleScroll 1: ');
+
+            const {target}      = e;
+            const currentScroll = target.scrollTop;
+
+            // scroll once user reaches within 1000 pixel of top part of screen:
+            if (currentScroll <= 1000) {
+              this.generateChats();
+            }
+          }
+        },
+
+        // generate conversation of 100 per turn:
+        generateChats() {
+          this.loadingMore = true;
+
+          // get current authenticated user and recipient user:
+          const user: User          = this.$store.state.user;
+          const recipientUser: User = {
+            id         : this.$store.state.chat.id,
+            name       : this.$store.state.chat.name,
+            phoneNumber: this.$store.state.chat.phoneNumber,
+            avatar     : this.$store.state.chat.avatar,
+          };
+
+          // generate user list with 100 chats per turn:
+          const chats: Chat[] = [];
+
+          // generate chats with random message, time and user:
+          for (let i = 0; i < 100; i++) {
+            const message: string = randomMessages[Math.floor((Math.random() * randomMessages.length)) | 0];
+
+            // randomly decide if this message is sent by authenticated user or other user:
+            const isOwnMessage: boolean = Math.random() < 0.5;
+
+            chats[i] = {
+              id       : this.uuidv4(),
+              message  : message,
+              timestamp: this.timestampStart.add(i, 'hours').format('h:mm a'),
+              status   : ChatStatus.read,
+              user     : isOwnMessage ? user : recipientUser,
+            }
+          }
+
+          // store chats data in vuex store:
+          this.$store.dispatch('chat/pushChats', chats)
+              .then(() => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                // this.$refs.scroller?.scrollToItem();
+
+                // delay for 3 second before receiving next scroll event::
+                // setTimeout(() => {
+                  this.loadingMore = false;
+                // }, 3000);
+
+                console.log('generateChats: ', {chats});
+                console.log('generateChats: ', {length: this.$store.state.chat.chats?.length});
+              });
+        },
+
+        // generate random uuid for new user:
+        uuidv4() {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        },
+
+        // scroll to bottom of screen:
+        scrollToBottom() {
+          if (this.$refs.scroller) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            this.$refs.scroller?.scrollToBottom({behavior: 'smooth'});
+          }
+        },
       }
     })
 </script>
 
-<style scoped lang = "scss">
+<style lang = "scss">
 .chat-screen {
-  height           : 100%;
   background-color : #F3EDE7;
 }
 
-.v-list {
-  display          : flex;
-  flex-direction   : column;
-  align-items      : flex-start;
+.my-list {
+  height         : calc(100vh - 56px); // 56px = top tab bar height.
+  //height     : 100%;
 
-  background-color : #F3EDE7;
-  padding          : 60px 16px 60px 16px; // top header fixed size. and bottom text input section.
+  margin-top     : 56px;
+  padding-bottom : 60px; // top header fixed size. and bottom text input section.
 
-  .chat-item {
-    display          : flex;
-    flex-direction   : row;
-    align-items      : flex-start;
-    flex-wrap        : wrap;
+  .vue-recycle-scroller__item-view {
+    padding : 0 16px;
 
-    min-height       : auto;
+    .message-container {
+      display     : block;
 
-    border-radius    : 16px;
-    padding          : 8px 12px 2px;
-    margin           : 1.5px 0;
-    max-width        : 90%;
+      line-height : 1; // fix for vuetify.
+      min-height  : auto;
 
-    background-color : white;
-    box-shadow       : 0 1px rgba(0, 0, 0, 0.10);
+      padding     : 7px 12px;
+      margin      : 1.5px 0;
+      max-width   : 90%;
 
-    .chat-message {
-      font-size   : 16px;
-      color       : #121B21;
-      line-height : 1.25;
-    }
+      filter      : drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.20)); // for shape shadow.
 
-    .chat-time-status {
-      //flex-grow      : 1;
-      //flex-shrink    : 0;
+      .message {
+        display     : inline-block;
 
-      display        : flex;
-      flex-direction : row;
-      align-items    : center;
-
-      margin-left    : 10px;
-      margin-top     : 6px;
-
-      .chat-time {
-        //flex-grow   : 1;
-        //flex-shrink : 0;
-
-        font-size : 13px;
-        color     : #667978;
+        font-size   : 16px;
+        line-height : 1.25;
       }
 
-      .chat-status {
-        width       : 16px;
-        max-width   : 16px;
+      .message-time-status {
+        display     : inline-block;
+        float       : right;
+        position    : relative;
+        bottom      : -4px;
 
-        object-fit  : contain;
+        line-height : 1.25; // fix for vuetify.
+        margin-left : 10px;
 
-        margin-left : 5px;
+        .message-time {
+          display   : inline-block;
+
+          font-size : 13px;
+        }
+
+        .message-status {
+          display     : inline-block;
+
+          width       : 16px;
+          max-width   : 16px;
+
+          object-fit  : contain;
+
+          margin-left : 5px;
+        }
       }
     }
-  }
 
-  .chat-item::after {
-    border-width : 0 0 10px 10px;
-    border-color : transparent transparent transparent #e1ffc7;
-    top          : 0;
-    right        : -10px;
-  }
+    // differences for received chat message: background color and time text color:
+    .received {
+      float            : left;
+      background-color : white;
+      border-radius    : 0px 5px 5px 5px;
 
-  // differences for own chat message: background color and time text color:
-  .chat-item-own {
-    align-self       : flex-end;
-    background-color : #E7FFDC;
+      .message-message {
+        color : #121B21;
+      }
 
-    .chat-message {
-      color : black;
+      .message-time {
+        color : #69767F;
+      }
     }
 
-    .chat-time {
-      color : #69767F;
-    }
-  }
+    // differences for own chat message: background color and time text color:
+    .sent {
+      float            : right;
+      background-color : #E7FFDC;
+      border-radius    : 5px 0px 5px 5px;
 
-  // add extra top margin if messages are not from same person:
-  .chat-item-margin {
-    margin-top : 8px;
+      .message-message {
+        color : black;
+      }
+
+      .message-time {
+        color : #667978;
+      }
+    }
+
+    // add extra top margin if messages are not from same person:
+    .message-container-margin {
+      margin-top : 8px;
+
+      // top arrow shape, for both left and right component:
+      // idea taken from: https://codepen.io/swaibu/pen/YjrPVJ
+      &:after {
+        position     : absolute;
+        content      : "";
+        width        : 0;
+        height       : 0;
+        border-style : solid;
+      }
+
+      // top arrow shape for received component:
+      &.received:after {
+        border-width : 0px 10px 10px 0;
+        border-color : transparent #fff transparent transparent;
+        top          : 0;
+        left         : -10px;
+      }
+
+      // top arrow shape for sent component:
+      &.sent:after {
+        border-width : 0px 0 10px 10px;
+        border-color : transparent transparent transparent #e1ffc7;
+        top          : 0;
+        right        : -10px;
+      }
+    }
   }
 }
 
@@ -236,26 +493,37 @@ export default Vue.extend(
     align-items      : center;
 
     flex             : 1;
+    //max-width        : calc(100% - 57px);
+
     background-color : white;
     border-radius    : 25px;
 
     margin-right     : 5px;
-    padding          : 7px 8px 7px 4px;
+    padding          : 7px 8px 7px 6px;
 
-    box-shadow       : 0 1px rgba(0, 0, 0, 0.08) !important;
+    box-shadow       : 0 0 2px rgba(0, 0, 0, 0.20) !important;
 
     .v-btn {
       .v-image {
-        width     : 26px;
-        max-width : 26px;
+        width      : 26px;
+        max-width  : 26px;
+
+        transition : all 0.25s ease;
+      }
+
+      .img-emoji {
+        width     : 30px;
+        max-width : 30px;
       }
     }
 
     input {
       flex        : 1;
+      //max-width   : calc(100% - 57px);
 
-      font-weight : map-get($roboto-weights, medium);
-      font-size   : 17px;
+      margin-left : 4px;
+
+      font-size   : 18px;
       color       : black;
 
       caret-color : $primary_light;
@@ -273,6 +541,16 @@ export default Vue.extend(
     .v-image {
       width     : 16px;
       max-width : 16px;
+    }
+  }
+
+  .btn-send {
+    background-color : $primary_light;
+
+    .v-image {
+      height    : 24px;
+      width     : 24px;
+      max-width : 24px;
     }
   }
 }

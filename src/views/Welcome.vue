@@ -36,6 +36,7 @@
           :rules = "rulesPhoneNumber"
           required
           solo
+          type = "number"
       />
 
       <!--sign up submit button-->
@@ -100,7 +101,6 @@ export default Vue.extend(
               name       : this.name,
               phoneNumber: this.phoneNumber,
               avatar     : '@/assets/images/3x/user.png',
-              isActive   : true,
             }
             console.log(user);
 
@@ -122,7 +122,7 @@ export default Vue.extend(
           // message timestamp start time set to 1 year earlier:
           const timestampStart = moment().subtract(12, 'months');
 
-          // generate user list with 5000 chats per user:
+          // generate user list with 100 chats per user:
           const generatedChats: User[] = mockUsers.map(mockUser => {
             const chats: Chat[] = [];
 
@@ -138,7 +138,7 @@ export default Vue.extend(
               const isOwnMessage: boolean = Math.random() < 0.5;
 
               chats[i] = {
-                id       : i + 1,
+                id       : this.uuidv4(),
                 message  : message,
                 timestamp: timestampStart.add(i, 'hours').format('h:mm a'),
                 status   : i > randomUnreadIndex ? ChatStatus.sent : ChatStatus.read,

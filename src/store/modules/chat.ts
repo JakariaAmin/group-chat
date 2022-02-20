@@ -1,21 +1,21 @@
 import {ActionTree, GetterTree, Module, MutationTree} from 'vuex';
 import {StateInterface} from "@/store";
 import User from "@/data/interface/User";
-import Chat from "@/data/interface/Chat";
 import {ChatStatus} from "@/data/enum/ChatStatus";
+import Chat from "@/data/interface/Chat";
 
 
 // initial state:
 const initialState = (): User => ({} as User);
 
 // state:
-const state = () => {
+const state = (): User => {
     return initialState();
 }
 
 // getters:
 const getters: GetterTree<User, StateInterface> = {
-    getUser: (state: User, id: string) => {
+    getUser: (state: User) => {
         return state;
     },
 }
@@ -30,18 +30,33 @@ const actions: ActionTree<User, StateInterface> = {
         commit('INIT_USER', payload);
     },
 
-    pushChat({commit}, payload: any) {
-        commit('PUSH_CHAT', payload);
+    // insert new chat intro conversation thread:
+    pushChat({state}, payload: Chat) {
+        return new Promise((resolve) => {
+            state.chats?.push(payload);
+
+            resolve(true);
+        })
     },
 
-    setRead({commit}, payload: any) {
+    // insert new chats intro conversation thread, mock data to reach 5000:
+    pushChats({state}, payload: Chat[]) {
+        return new Promise((resolve) => {
+
+            state.chats?.splice(0, 0, ...payload);
+
+            resolve(true);
+        })
+    },
+
+    setRead({commit}, payload) {
         commit('SET_READ', payload);
     },
 }
 
 // mutations:
 const mutations: MutationTree<User> = {
-    RESET(state: User) {
+    RESET() {
         return initialState();
     },
 
@@ -50,15 +65,10 @@ const mutations: MutationTree<User> = {
         Object.assign(state, payload);
     },
 
-    // insert new chat intro conversation thread:
-    PUSH_CHAT(state: User, payload: Chat) {
-        state.chats?.push(payload);
-    },
-
-    // set all messages to read:
-    SET_READ(state: User, payload: any) {
+    // set all not own messages to read status:
+    SET_READ(state: User, id: string) {
         const updatedState = state.chats?.map(chat => {
-            if (chat.status !== ChatStatus.read) {
+            if (chat.user?.id !== id && chat.status !== ChatStatus.read) {
                 chat.status = ChatStatus.read;
             }
 

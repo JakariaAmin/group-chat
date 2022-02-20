@@ -7,9 +7,7 @@
     <app-bar-home/>
 
     <!--router view-->
-    <transition name = "scale" mode = "out-in">
-      <router-view></router-view>
-    </transition>
+    <router-view></router-view>
 
   </div>
 </template>

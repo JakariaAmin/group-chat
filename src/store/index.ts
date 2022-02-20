@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import User from "@/data/interface/User";
 import createPersistedState from 'vuex-persistedstate';
 import UserModule from "@/store/modules/user";
-import ChatsModule from "@/store/modules/chat";
+import ChatsModule from "@/store/modules/chats";
 import ChatModule from "@/store/modules/chat";
 
 Vue.use(Vuex);
@@ -12,7 +12,7 @@ Vue.use(Vuex);
 const modules = {
     user : UserModule,
     chats: ChatsModule,
-    chat: ChatModule,
+    chat : ChatModule,
 }
 
 // selective persisted state:

@@ -7,7 +7,7 @@ import User from "@/data/interface/User";
 const initialState = (): User => ({} as User);
 
 // state:
-const state = () => {
+const state = (): User => {
     return initialState();
 }
 
@@ -31,7 +31,7 @@ const actions: ActionTree<User, StateInterface> = {
 
 // mutations:
 const mutations: MutationTree<User> = {
-    RESET(state: User) {
+    RESET() {
         return initialState();
     },
 

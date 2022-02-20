@@ -109,6 +109,7 @@ export default Vue.extend(
       computed: {
         // get total unread message from store:
         getTotalUnread() {
+          console.log('getTotalUnread');
           return this.$store.getters["chats/getTotalUnread"]
         }
       }

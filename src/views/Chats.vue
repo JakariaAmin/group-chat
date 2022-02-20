@@ -37,7 +37,7 @@
           <v-list-item-action>
             <div :class = "['chat-time', countUnread(user.chats) ? 'unread' : '' ]">{{ user.chats[user.chats.length - 1].timestamp }}</div>
 
-            <div class = "chat-count">{{ countUnread(user.chats) }}</div>
+            <div class = "chat-count" v-if = "countUnread(user.chats)">{{ countUnread(user.chats) }}</div>
           </v-list-item-action>
 
         </v-list-item>
@@ -91,7 +91,9 @@ export default Vue.extend(
       methods: {
         // count total number of unread message:
         countUnread(chats: Chat[]) {
-          return chats?.reduce((count, chat) => chat.status !== ChatStatus.read ? ++count : count, 0);
+          const user: User = this.$store.state.user;
+
+          return chats?.reduce((count, chat) => chat.user?.id !== user.id && chat.status !== ChatStatus.read ? ++count : count, 0);
         },
 
         // go to chat screen of target user:
@@ -100,6 +102,7 @@ export default Vue.extend(
           this.$store.dispatch('chat/initUser', user)
               .then(() => {
                 console.log('toChatScreen: ', this.$store.state.chat);
+
                 this.$router.push({path: '/home/chats/' + user.id})
               });
         }

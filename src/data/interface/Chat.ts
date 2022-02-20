@@ -5,7 +5,7 @@ import {ChatStatus} from "@/data/enum/ChatStatus";
  * Chat:
  */
 export default interface Chat {
-    readonly id: number;
+    readonly id: string;
     message?: string;
     timestamp?: string;
 

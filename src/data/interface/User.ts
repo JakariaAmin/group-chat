@@ -9,5 +9,4 @@ export default interface User {
     phoneNumber?: string;
     avatar?: string;
     chats?: Chat[];
-    isActive?: boolean;
 }

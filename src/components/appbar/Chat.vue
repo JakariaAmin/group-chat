@@ -7,7 +7,7 @@
         fixed
     >
       <!--left section consists of back button user avatar and photo-->
-      <div class = "row align-center" @click = "$router.back()">
+      <div class = "left-container" @click = "$router.back()">
         <!--back button-->
         <my-image src = "ic_back.png" class = "img-back"/>
 
@@ -97,6 +97,12 @@ export default Vue.extend(
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang = "scss">
+.left-container {
+  display        : flex;
+  flex-direction : row;
+  align-items    : center;
+}
+
 .app-bar .v-btn .v-image, .img-back {
   height     : 26px;
   width      : 26px;

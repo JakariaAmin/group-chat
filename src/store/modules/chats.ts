@@ -9,7 +9,7 @@ import {ChatStatus} from "@/data/enum/ChatStatus";
 const initialState = (): User[] => ([] as User[]);
 
 // state:
-const state = () => {
+const state = (): User[] => {
     return initialState();
 }
 
@@ -52,13 +52,13 @@ const actions: ActionTree<User[], StateInterface> = {
         commit('INIT_USERS', payload);
     },
 
-    pushChat({commit}, payload: any) {
+    pushChat({commit}, payload) {
         commit('PUSH_CHAT', payload);
     },
 
     // get count of unread messages of target user:
     countUnread({state}, id: string) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             resolve(state.find(val => val.id === id)?.chats?.reduce((count, chat) => chat.status !== ChatStatus.read ? ++count : count, 0));
         })
     },
@@ -66,7 +66,7 @@ const actions: ActionTree<User[], StateInterface> = {
 
 // mutations:
 const mutations: MutationTree<User[]> = {
-    RESET(state: User[]) {
+    RESET() {
         return initialState();
     },
 
@@ -76,7 +76,7 @@ const mutations: MutationTree<User[]> = {
     },
 
     // insert new chat intro conversation thread with target user:
-    PUSH_CHAT(state: User[], payload: any) {
+    PUSH_CHAT(state: User[], payload) {
         const id: string = payload?.id;
         const chat: Chat = payload?.chat;
 

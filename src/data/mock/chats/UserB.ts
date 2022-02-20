@@ -1,8 +1,9 @@
+/*
 import User from "@/data/interface/User";
 
-/**
+/!**
  * Dummy data to populate user conversations in chat screen:
- */
+ *!/
 export const mockChatsUserB = <User>{
     "id": "14a45d75-31fd-46b2-ab85-cc480eb3e05d",
     "name": "User B",
@@ -60011,3 +60012,4 @@ export const mockChatsUserB = <User>{
         }
     ]
 }
+*/

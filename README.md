@@ -13,9 +13,10 @@ The application can be opened in 2 different browsers. Both browser windows can 
 - [Vuex](https://vuex.vuejs.org)
 - [Vue-I18n](https://kazupon.github.io/vue-i18n)
 - [Vuetify-loader](https://github.com/vuetifyjs/vuetify-loader)
+- [vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller)
 - [Firebase](https://www.npmjs.com/package/firebase)
 - [http-server](https://github.com/http-party/http-server)
-- [Quasar 1](https://v1.quasar.dev/)
+- [Vue Twemoji Picker](https://github.com/kevinfaveri/vue-twemoji-picker)
 
 ## Features
 
@@ -40,9 +41,6 @@ Chats Screen Settings:
 
 Chats Screen in PWA Mode:
 <img width="480" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/154456205-dbbd6c09-93eb-43eb-b7fc-756a6413a84c.png">
-
-## Why use Vuetify and Quasar together?
-As Vuetify doesn't support dynamic height support in virtual scroller component and also their list doesn't support infinite scroll feature out of box, Qusar support both for list view. In future update Vuetify can be removed to only keep Qusar as primary framework.
 
 ## Project setup
 
