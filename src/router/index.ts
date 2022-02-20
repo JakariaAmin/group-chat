@@ -1,34 +1,48 @@
-import Vue from 'vue'
-import VueRouter, {RouteConfig} from 'vue-router'
-import Home from '../views/Home.vue'
-import Chats from '../views/Chats.vue'
+import Vue from "vue";
+import VueRouter, {RouteConfig} from "vue-router";
+import Chats from "../views/Chats.vue";
+import Chat from "@/views/Chat.vue";
+import ChatHome from "@/layouts/ChatHome.vue";
+import Welcome from "@/views/Welcome.vue";
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
     {
         path     : '/',
-        name     : 'Home',
-        component: Chats
+        name     : 'Welcome',
+        component: Welcome
     },
     {
-        path     : '/chats',
-        name     : 'Chats',
-        component: Chats
+        path     : '/home',
+        name     : 'ChatHome',
+        component: ChatHome,
+        children : [
+            {
+                path     : 'chats',
+                name     : 'Chats',
+                component: Chats,
+            },
+            {
+                path     : 'status',
+                name     : 'Status',
+                component: () => import('../views/Status.vue')
+            },
+            {
+                path: 'calls',
+                name: 'Calls',
+                // route level code-splitting
+                // this generates a separate chunk (about.[hash].js) for this route
+                // which is lazy-loaded when the route is visited.
+                component: () => import(/* webpackChunkName: "about" */ '../views/Calls.vue')
+            }
+        ]
     },
     {
-        path     : '/status',
-        name     : 'Status',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Status.vue')
+        path     : '/home/chats/:id',
+        name     : 'Chat',
+        component: Chat,
     },
-    {
-        path: '/calls',
-        name: 'Calls',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/Calls.vue')
-    }
 ]
 
 const router = new VueRouter(

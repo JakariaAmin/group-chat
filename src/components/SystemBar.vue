@@ -4,7 +4,6 @@
       height = "30"
       color = "primary"
       dark
-      fixed
   >
     <v-spacer></v-spacer>
 
@@ -13,7 +12,7 @@
 </template>
 
 <script lang = "ts">
-import Vue from 'vue'
+import Vue from "vue";
 
 export default Vue.extend(
     {

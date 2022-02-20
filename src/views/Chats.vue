@@ -1,9 +1,11 @@
 <template>
   <div>
+
+    <!--list item archived-->
     <v-list-item key = "archived" class = "item-archived" @click = "snackbar = true">
       <!--archived icon-->
       <v-list-item-avatar class = "chat-avatar">
-        <v-icon class = "archive-icon">$vuetify.icons.archive</v-icon>
+        <my-image src = "ic_archive_chatcell.png"/>
       </v-list-item-avatar>
 
       <!--archived text-->
@@ -12,28 +14,30 @@
       </v-list-item-content>
     </v-list-item>
 
-    <!--user list of chat-->
+    <!--user list-->
     <v-list two-line>
-      <template v-for = "(item) in users">
-        <v-list-item :key = "item.title" @click = "snackbar = true">
+      <template v-for = "(user) in $store.state.chats">
+        <v-list-item :key = "user.id" @click = "toChatScreen(user)">
 
           <!--user photo-->
           <v-list-item-avatar class = "chat-avatar">
-            <v-img :src = "item.avatar" alt = "chat-avatar"></v-img>
+            <v-img :src = "user.avatar" alt = "chat-avatar"></v-img>
           </v-list-item-avatar>
 
-          <!--section: title and subtitle-->
+          <!--section: name and message-->
           <v-list-item-content>
-            <div class = "chat-title">{{ item.title }}</div>
+            <div class = "chat-title">{{ user.name }}</div>
 
-            <v-list-item-subtitle class = "chat-subtitle">{{ item.subtitle }}</v-list-item-subtitle>
+            <v-list-item-subtitle class = "chat-subtitle">
+              {{ user.chats[user.chats.length - 1].message }}
+            </v-list-item-subtitle>
           </v-list-item-content>
 
           <!--section: time and unread count-->
           <v-list-item-action>
-            <div :class = "['chat-time', item.unread ? 'unread' : '' ]">{{ item.time }}</div>
+            <div :class = "['chat-time', countUnread(user.chats) ? 'unread' : '' ]">{{ user.chats[user.chats.length - 1].timestamp }}</div>
 
-            <div class = "chat-count" v-if = "item.unread">{{ item.unread }}</div>
+            <div class = "chat-count">{{ countUnread(user.chats) }}</div>
           </v-list-item-action>
 
         </v-list-item>
@@ -52,7 +56,7 @@
         elevation = "10"
         @click = "snackbar = true"
     >
-      <v-icon>$vuetify.icons.message</v-icon>
+      <my-image src = "ic_settings_chats.png"/>
     </v-btn>
 
     <!--snackbar to display alert/notification message-->
@@ -69,81 +73,69 @@
 </template>
 
 <script lang = "ts">
-import Vue from 'vue'
+import Vue from "vue";
+import MyImage from "@/components/MyImage.vue";
+import Chat from "@/data/interface/Chat";
+import {ChatStatus} from "@/data/enum/ChatStatus";
+import User from "@/data/interface/User";
 
 export default Vue.extend(
     {
-      name: 'Chats',
-
-      components: {},
+      name      : 'Chats',
+      components: {MyImage},
 
       data: () => ({
         snackbar: false,
-
-        users: [
-          {
-            avatar  : 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-            title   : 'User A',
-            subtitle: `I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-            time    : '6:50 pm',
-            unread  : 2,
-          },
-          {
-            avatar  : 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-            title   : 'User B',
-            subtitle: `Wish I could come, but I'm out of town this weekend.`,
-            time    : '4:30 pm',
-            unread  : 0,
-          },
-          {
-            avatar  : 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-            title   : 'User C',
-            subtitle: `Do you have Paris recommendations? Have you ever been?`,
-            time    : '3:25 pm',
-            unread  : 6,
-          },
-          {
-            avatar  : 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-            title   : 'User D',
-            subtitle: 'Have any ideas about what we should get Heidi for her birthday?',
-            time    : '1:20 pm',
-            unread  : 9,
-          },
-          {
-            avatar  : 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-            title   : 'User E',
-            subtitle: 'We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-            time    : '1:10 pm',
-            unread  : 0,
-          },
-        ],
       }),
+
+      methods: {
+        // count total number of unread message:
+        countUnread(chats: Chat[]) {
+          return chats?.reduce((count, chat) => chat.status !== ChatStatus.read ? ++count : count, 0);
+        },
+
+        // go to chat screen of target user:
+        toChatScreen(user: User) {
+          // store chats data in vuex store before navigating to chat screen:
+          this.$store.dispatch('chat/initUser', user)
+              .then(() => {
+                console.log('toChatScreen: ', this.$store.state.chat);
+                this.$router.push({path: '/home/chats/' + user.id})
+              });
+        }
+      }
     })
 </script>
 
 <style scoped lang = "scss">
 .item-archived {
   .v-avatar {
-    margin : 0;
+    margin : 8px 0 0;
+
+    .v-image {
+      height     : 26px;
+      width      : 26px;
+      max-width  : 26px;
+
+      object-fit : contain;
+    }
+  }
+
+  .title-archived {
+    font-weight : map-get($roboto-weights, medium);
+    font-size   : 17.5px;
+    color       : black;
+
+    margin      : 8px 20px 0 0px;
   }
 }
 
-.archive-icon {
-  color         : $primary;
+.v-list {
+  padding-top : 0;
 
-  border-radius : 0px;
-  width         : 20px;
-  height        : 20px;
-
-  margin-top    : 12px;
-}
-
-.title-archived {
-  font-weight : map-get($roboto-weights, medium);
-  font-size   : 17px;
-  color       : black;
-
-  margin      : 8px 20px 0 0px;
+  .v-list-item__action--stack {
+    justify-content : flex-start;
+  }
 }
 
 .chat-avatar {
@@ -154,21 +146,17 @@ export default Vue.extend(
 }
 
 .chat-title {
-  font-weight   : map-get($roboto-weights, medium);
-  font-size     : 17px;
-  color         : black;
-
-  margin-bottom : 6px;
+  font-weight : map-get($roboto-weights, medium);
+  font-size   : 17.5px;
+  color       : black;
 }
 
 .chat-subtitle {
   font-weight : map-get($roboto-weights, regular);
-  font-size   : 14px;
+  font-size   : 14.5px;
   color       : $user_message !important;
-}
 
-.v-list-item__action--stack {
-  justify-content : flex-start;
+  margin-top  : 5px;
 }
 
 .chat-time {
@@ -198,10 +186,16 @@ export default Vue.extend(
   padding-right    : 6px;
 
   background-color : $unread_count;
-  color            : white;
 
   font-family      : $roboto;
   font-weight      : map-get($roboto-weights, bold);
   font-size        : 12px;
+  color            : white;
+}
+
+.v-btn--fab .v-image {
+  height    : 26px;
+  width     : 26px;
+  max-width : 26px;
 }
 </style>

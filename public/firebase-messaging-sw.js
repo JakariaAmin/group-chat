@@ -1,10 +1,10 @@
-// import { initializeApp } from 'firebase/app';
+// import { initializeApp } from "firebase/app";
 
 // importScripts('https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js');
 // importScripts('https://www.gstatic.com/firebasejs/9.6.6/firebase-messaging.js');
 
-import firebase from 'firebase/app'
-import 'firebase/firebase-messaging'
+import firebase from "firebase/app";
+import "firebase/firebase-messaging";
 
 var firebaseConfig = {
     apiKey           : 'AIzaSyAasayyZGe0v9czhyO0dopGgramFZVgHls',

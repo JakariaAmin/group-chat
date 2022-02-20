@@ -6,13 +6,13 @@
         dark
     >
       <!--WhatsApp title at top left corner-->
-      <div class = "title-whatsapp">WhatsApp</div>
+      <div class = "title-whatsapp" @click = "$router.push('/')">{{ $vuetify.lang.t('$vuetify.WhatsApp') }}</div>
 
       <v-spacer></v-spacer>
 
       <!--search icon at top right corner-->
-      <v-btn icon class = "icon-first" @click = "snackbar = true">
-        <v-icon>$vuetify.icons.search</v-icon>
+      <v-btn icon @click = "snackbar = true">
+        <my-image src = "ic_search_normal.png" classes = "img-search"/>
       </v-btn>
 
       <!--settings icon at top right corner and it's menu-->
@@ -23,13 +23,8 @@
       >
         <template v-slot:activator = "{ on, attrs }">
           <!--settings btn with icon-->
-          <v-btn
-              dark
-              icon
-              v-bind = "attrs"
-              v-on = "on"
-          >
-            <v-icon>$vuetify.icons.settings</v-icon>
+          <v-btn icon v-bind = "attrs" v-on = "on">
+            <my-image src = "ic_more.png" classes = "img-more"/>
           </v-btn>
         </template>
 
@@ -48,8 +43,8 @@
       <!--tabs section-->
       <template v-slot:extension>
         <!--camera btn icon at left top corner-->
-        <v-btn icon @click = "snackbar = true">
-          <v-icon class = "tab-icon">$vuetify.icons.camera</v-icon>
+        <v-btn icon @click = "snackbar = true" class = "btn-camera">
+          <my-image src = "ic_home_camera.png" classes = "img-camera"/>
         </v-btn>
 
         <!--tabs: chats, status, calls-->
@@ -58,21 +53,21 @@
             slider-size = "3"
             class = "top-tabs"
         >
-          <v-tab to = "/chats">
+          <v-tab to = "/home/chats">
             {{ $vuetify.lang.t('$vuetify.CHATS') }}
 
             <!--unread message count-->
-            <div class = "tab-chip">6</div>
+            <div class = "tab-chip" v-if = "getTotalUnread">{{ getTotalUnread }}</div>
           </v-tab>
 
-          <v-tab to = "/status">
+          <v-tab to = "/home/status">
             {{ $vuetify.lang.t('$vuetify.STATUS') }}
 
             <!--dot-->
             <span class = "dot"/>
           </v-tab>
 
-          <v-tab to = "/calls">
+          <v-tab to = "/home/calls">
             {{ $vuetify.lang.t('$vuetify.CALLS') }}
           </v-tab>
         </v-tabs>
@@ -92,11 +87,13 @@
 </template>
 
 <script lang = "ts">
-import Vue from 'vue'
+import Vue from "vue";
+import MyImage from "@/components/MyImage.vue";
 
 export default Vue.extend(
     {
-      name: 'AppBar',
+      name      : 'AppBarHome',
+      components: {MyImage},
 
       data: () => ({
         snackbar: false,
@@ -108,43 +105,54 @@ export default Vue.extend(
           {title: 'Settings'},
         ],
       }),
+
+      computed: {
+        // get total unread message from store:
+        getTotalUnread() {
+          return this.$store.getters["chats/getTotalUnread"]
+        }
+      }
     })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang = "scss">
-.app-bar {
-  box-shadow : 0px 2px 10px 0 rgba(0, 0, 0, 0.10) !important;
+.app-bar .v-image {
+  object-fit : contain;
 
-  margin-top : 30px !important;
-
-  .v-icon {
-    width : 20px !important;
+  &.img-search {
+    height    : 21px;
+    width     : 21px;
+    max-width : 21px;
   }
+
+  &.img-more {
+    height    : 26px;
+    width     : 26px;
+    max-width : 26px;
+  }
+
+  &.img-camera {
+    height    : 24px;
+    width     : 24px;
+    max-width : 24px;
+
+    opacity   : 0.75;
+  }
+}
+
+.btn-camera {
+  width : 40px !important;
 }
 
 .title-whatsapp {
   font-weight : map-get($roboto-weights, medium);
-  font-size   : 21px;
-}
-
-.icon-first {
-  margin-right : 8px;
+  font-size   : 21.5px;
 }
 
 .v-menu__content {
   border-radius : 2px;
   box-shadow    : rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
-}
-
-.menu-list {
-  padding : 4px 20px 4px 2px;
-  right   : 4px;
-}
-
-.tab-icon {
-  width : 20px !important;
-  color : rgba(255, 255, 255, 0.75) !important;
 }
 
 .top-tabs {
@@ -167,14 +175,13 @@ export default Vue.extend(
   border-radius    : 10px;
   padding-left     : 6px;
   padding-right    : 6px;
-  padding-bottom   : 0.5px;
 
   background-color : white;
   color            : $primary;
 
   font-family      : $roboto;
   font-weight      : map-get($roboto-weights, bold);
-  font-size        : 13px;
+  font-size        : 11px;
 }
 
 .dot {
