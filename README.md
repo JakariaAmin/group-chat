@@ -55,34 +55,34 @@ Netlify: https://vuejs2-whatsapp-clone.netlify.app
 ## Screenshots
 
 Welcome Screen:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155047791-a2c3f0b9-2ce3-401e-a391-c9ea2d737eaf.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155047791-a2c3f0b9-2ce3-401e-a391-c9ea2d737eaf.png">
 
 Broadcast Message Modal:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049454-909d5ca6-49d0-438d-8ae7-14855ab4378f.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049454-909d5ca6-49d0-438d-8ae7-14855ab4378f.png">
 
 Broadcast Success Message:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049458-c26705da-604e-4a2b-996b-a269ba2a8dff.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049458-c26705da-604e-4a2b-996b-a269ba2a8dff.png">
 
 Chats Screen:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049593-7068f814-54ff-4830-bd0a-4d88d8a268e0.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049593-7068f814-54ff-4830-bd0a-4d88d8a268e0.png">
 
 Chat Conversation Screen:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049702-8aaae252-7f89-4819-9aaf-ec7fd0aaa7d5.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049702-8aaae252-7f89-4819-9aaf-ec7fd0aaa7d5.png">
 
 Chat Counter:
-<img width="480" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049813-67faad44-8669-4bf3-8c6c-19b1346fddae.png">
+<img width="420" alt="Chats Screen" src="https://user-images.githubusercontent.com/11033159/155049813-67faad44-8669-4bf3-8c6c-19b1346fddae.png">
 
 Chats Screen Settings:
-<img width="480" alt="Chats Screen Settings" src="https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png">
+<img width="420" alt="Chats Screen Settings" src="https://user-images.githubusercontent.com/11033159/154451524-376a871e-23e2-464e-889f-e59d5beb69d0.png">
 
 PWA (Welcome Screen):
-<img width="480" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051830-5067dd09-d611-4220-9aa4-a69419a8c254.png">
+<img width="420" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051830-5067dd09-d611-4220-9aa4-a69419a8c254.png">
 
 PWA (Chats Screen):
-<img width="480" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051906-e14cd2f6-a1d1-4271-912c-0014b0169cee.png">
+<img width="420" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051906-e14cd2f6-a1d1-4271-912c-0014b0169cee.png">
 
 PWA (Conversation Screen):
-<img width="480" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051950-4e616dd9-a5fa-4a26-b03b-00bd655d9d29.png">
+<img width="420" alt="Chats Screen in PWA Mode" src="https://user-images.githubusercontent.com/11033159/155051950-4e616dd9-a5fa-4a26-b03b-00bd655d9d29.png">
 
 ## Project setup
 
