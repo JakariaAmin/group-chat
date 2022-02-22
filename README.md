@@ -48,7 +48,7 @@ Netlify: https://condescending-curran-3c6529.netlify.app
 ## Other features
 
 - Scrolling to the top of conversation will load 500 random chats at a time, up to 5000 in total to stress test list's ability to load number of items.
-- Incoming message do update chat in chats tab screen, but in conversations screen might have to type something in text input for new message to appear for other user. This is current known bug which will be fixed.
+- Incoming message do update chat in chats tab screen and in conversations screen, but doesn't scroll to bottom. This is current known bug which will be fixed.
 - Some feature in this app is not exactly same as WhatsApp, for example find contact and create new conversation thread, as this app doesn't use any backend.
 - Firebase topic message is used to facilitate live chat rather than push notification to direct user as it requires fcm token, database.
 
