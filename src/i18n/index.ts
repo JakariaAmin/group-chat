@@ -6,8 +6,11 @@ const messages = {
     en: {
         $vuetify: {
             // general:
-            WhatsApp         : 'WhatsApp',
-            WelcomeToWhatsApp: 'Welcome to WhatsApp',
+            WhatsApp                : 'WhatsApp',
+            WelcomeToWhatsApp       : 'Welcome to WhatsApp',
+            LoadingConversations    : 'Loading conversations...',
+            NoMoreConversationToLoad: 'No more conversation to load',
+            Close                   : 'Close',
 
             // welcome screen form:
             Submit              : 'Submit',
@@ -25,6 +28,11 @@ const messages = {
             ValidationMaxLength: 'must be more than',
             Required           : 'Required',
             Characters         : 'Characters',
+
+            // create new chat form
+            CreateNewChat    : 'Create new chat',
+            CreateNewChatDesc: 'Broadcast messages to all users',
+            Broadcast        : 'Broadcast',
 
             // tabs:
             CHATS : 'CHATS',
@@ -46,7 +54,10 @@ const messages = {
             Wallpaper        : 'Wallpaper',
             More             : 'More',
 
-            Message: 'Message',
+            Message         : 'Message',
+            EnterMessage    : 'Enter message',
+            MessageSent     : 'Message Sent!',
+            BroadcastSuccess: 'In another tab login as user, in chats screen your message should appear as new chat thread.',
 
             // snackbar messages:
             FeatureNotReadyYet: 'Feature not ready yet!',

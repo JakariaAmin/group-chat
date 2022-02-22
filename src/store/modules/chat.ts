@@ -18,6 +18,10 @@ const getters: GetterTree<User, StateInterface> = {
     getUser: (state: User) => {
         return state;
     },
+
+    getChats: (state: User) => {
+        return state.chats;
+    },
 }
 
 // actions:
@@ -30,20 +34,29 @@ const actions: ActionTree<User, StateInterface> = {
         commit('INIT_USER', payload);
     },
 
+    pushThreadChat({commit}, chat: Chat) {
+        commit('PUSH_CHAT', chat);
+    },
+
     // insert new chat intro conversation thread:
-    pushChat({state}, payload: Chat) {
+    pushChat({commit, state}, payload: any) {
         return new Promise((resolve) => {
-            state.chats?.push(payload);
+            commit('PUSH_CHAT', payload.chat);
+
+            // update chats module too.
+            // as chat module can get too large 5000+ chats, had to se 2 module, 1 for users 1 for chats.
+            // find solution to improve this part and use 1 state rather than 2.
+            commit('chats/PUSH_CHAT', payload, {root: true});
 
             resolve(true);
         })
     },
 
     // insert new chats intro conversation thread, mock data to reach 5000:
-    pushChats({state}, payload: Chat[]) {
+    pushChats({state}, chats: Chat[]) {
         return new Promise((resolve) => {
 
-            state.chats?.splice(0, 0, ...payload);
+            state.chats?.splice(0, 0, ...chats);
 
             resolve(true);
         })
@@ -61,13 +74,19 @@ const mutations: MutationTree<User> = {
     },
 
     // set mock user and chat data:
-    INIT_USER(state: User, payload: User) {
-        Object.assign(state, payload);
+    INIT_USER(state: User, user: User) {
+        // take first 100 chats only when user load chat screen:
+        Object.assign(state, user);
+    },
+
+    // insert new chat into conversation thread:
+    PUSH_CHAT(state: User, chat: Chat) {
+        state.chats?.push(chat);
     },
 
     // set all not own messages to read status:
     SET_READ(state: User, id: string) {
-        const updatedState = state.chats?.map(chat => {
+        const updatedChats = state.chats?.map(chat => {
             if (chat.user?.id !== id && chat.status !== ChatStatus.read) {
                 chat.status = ChatStatus.read;
             }
@@ -75,9 +94,7 @@ const mutations: MutationTree<User> = {
             return {...chat};
         });
 
-        console.log('SET_READ: ', {updatedState});
-
-        return Object.assign(state, updatedState);
+        return Object.assign(state, {...state, chats: updatedChats});
     },
 }
 

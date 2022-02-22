@@ -77,7 +77,7 @@ export default Vue.extend(
 
         rulesName: [
           (value: string) => !!value || 'Name is required.',
-          (value: string) => (value || '').length >= 4 || 'Name must be min 4 characters',
+          (value: string) => (value || '').length >= 2 || 'Name must be min 2 characters',
           (value: string) => (value || '').length <= 32 || 'Name can not be more than 32 characters',
         ],
 

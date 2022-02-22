@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@kevinfaguiar/vue-twemoji-picker": "^5.7.4",
+    "@quasar/extras": "^1.0.0",
     "@vue/composition-api": "^1.4.6",
+    "axios": "^0.26.0",
     "core-js": "^3.6.5",
-    "firebase": "^9.6.6",
+    "firebase": "8.4.3",
     "moment": "^2.29.1",
+    "quasar": "^1.0.0",
     "register-service-worker": "^1.7.1",
     "roboto-fontface": "*",
     "vue": "^2.6.11",
@@ -47,6 +50,7 @@
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "typescript": "~4.1.5",
+    "vue-cli-plugin-quasar": "3",
     "vue-cli-plugin-vuetify": "~2.4.5",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.0"

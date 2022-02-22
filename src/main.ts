@@ -3,16 +3,24 @@ import App from "./App.vue";
 import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
+
 import vuetify from "@/plugins/vuetify";
 
-// import VirtualList from "vue-virtual-scroll-list";
-import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller';
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import './quasar';
 
-Vue.config.productionTip = false;
+import {DynamicScroller, DynamicScrollerItem} from 'vue-virtual-scroller';
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 Vue.component("DynamicScroller", DynamicScroller);
 Vue.component("DynamicScrollerItem", DynamicScrollerItem);
+
+Vue.config.productionTip = false;
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import firebaseMessaging from './firebase';
+Vue.prototype.$messaging = firebaseMessaging;
+
 
 new Vue(
     {
@@ -23,10 +31,8 @@ new Vue(
     }).$mount('#app')
 
 
-
-// TODO: scroll to bottom on page open not fully working.
-// TODO: margin between chat bubble overlapping. specially in desktop layout.
-// TODO: chat text input width fix.
 // TODO: virtual scroll jumps on new data insert.
-// TODO: virtual scroll load more logical improvement.
+// TODO: virtual scroll load more logic improvement.
+
 // TODO: page transition.
+// TODO: margin between chat bubble overlapping. specially in desktop layout.

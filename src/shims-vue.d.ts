@@ -8,6 +8,11 @@ declare module 'vue-virtual-scroller' {
     export {DynamicScroller, DynamicScrollerItem}
 }
 
+/*declare module 'firebaseInitialize' {
+    import {firebaseInitialize} from './firebase.js';
+    export {firebaseInitialize}
+}*/
+
 /*declare module 'vue-virtual-scroll-list' {
     import {VirtualList} from 'vue-virtual-scroll-list'
     export {VirtualList}

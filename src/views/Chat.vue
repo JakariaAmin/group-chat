@@ -3,45 +3,107 @@
     <!--header-->
     <app-bar-chat/>
 
-    <!--chat list-->
-    <DynamicScroller
-        :items = "$store.state.chat.chats"
-        :min-item-size = "100"
+    <!--    <q-virtual-scroll
+            :items = "$store.state.chat.chats"
+            class = "my-list"
+            ref = "myScroll"
+        >
+          <template v-slot = "{ item, index }">-->
+
+    <q-infinite-scroll
+        :offset = "250"
+        reverse
+        @load = "onLoad"
         class = "my-list"
-        ref = "scroller"
-        @scroll.native.passive = "handleScroll"
     >
-      <template v-slot = "{ item, index, active }">
-        <DynamicScrollerItem
-            :item = "item"
-            :active = "active"
-            :size-dependencies = "[item.message]"
-            :data-index = "index"
-            :class = "[
+      <!--list loading icon-->
+      <template slot = "loading">
+        <!--        <div class = "list-loader" v-if = "$store.state.chat.chats && $store.state.chat.chats.length < maxChats">
+                  <q-spinner color = "primary" name = "dots" size = "24px"/>
+                </div>-->
+
+        <div class = "title-loading" v-if = "$store.state.chat.chats && $store.state.chat.chats.length < maxChats">
+          {{ $vuetify.lang.t('$vuetify.LoadingConversations') }}
+        </div>
+
+        <div class = "title-loading" v-else>
+          {{ $vuetify.lang.t('$vuetify.NoMoreConversationToLoad') }}
+        </div>
+      </template>
+
+      <!--chat message container-->
+      <div
+          v-for = "(item, index) in $store.state.chat.chats"
+          :key = "index"
+          :class = "[
                     'message-container',
                     item.user.id === $store.state.user.id ? 'sent' : 'received',
                    (index === 0 || ($store.state.chat.chats[index - 1] && item.user.id !== $store.state.chat.chats[index - 1].user.id)) && 'message-container-margin'
                 ]"
+      >
+        <div class = "message">{{ item.message }}</div>
+
+        <!--section: time and status image-->
+        <div class = "message-time-status">
+          <div class = "message-time">{{ item.timestamp }}</div>
+
+          <my-image
+              v-if = "item.user.id === $store.state.user.id"
+              :src = "getStatusImage(item.status)"
+              classes = "message-status"
+          />
+        </div>
+      </div>
+    </q-infinite-scroll>
+
+    <!--      </template>
+
+          <template slot = "before">
+            <div class = "row justify-center q-py-md" v-intersection = "onIntersection">
+              <q-spinner color = "primary" name = "dots" size = "24px"/>
+            </div>
+          </template>
+        </q-virtual-scroll>-->
+
+    <!--chat list-->
+    <!--    <DynamicScroller
+            :items = "$store.state.chat.chats"
+            :min-item-size = "100"
+            class = "my-list"
+            ref = "scroller"
+            @scroll.native.passive = "handleScroll"
         >
-          <div class = "message">{{ item.message }} [{{ index }}]</div>
+          <template v-slot = "{ item, index, active }">
+            <DynamicScrollerItem
+                :item = "item"
+                :active = "active"
+                :size-dependencies = "[item.message]"
+                :data-index = "index"
+                :class = "[
+                        'message-container',
+                        item.user.id === $store.state.user.id ? 'sent' : 'received',
+                       (index === 0 || ($store.state.chat.chats[index - 1] && item.user.id !== $store.state.chat.chats[index - 1].user.id)) && 'message-container-margin'
+                    ]"
+            >
+              <div class = "message">{{ item.message }} [{{ index }}]</div>
 
-          <!--section: time and status image-->
-          <div class = "message-time-status">
-            <div class = "message-time">{{ item.timestamp }}</div>
+              &lt;!&ndash;section: time and status image&ndash;&gt;
+              <div class = "message-time-status">
+                <div class = "message-time">{{ item.timestamp }}</div>
 
-            <my-image
-                v-if = "item.user.id === $store.state.user.id"
-                :src = "getStatusImage(item.status)"
-                classes = "message-status"
-            />
-          </div>
-        </DynamicScrollerItem>
-      </template>
+                <my-image
+                    v-if = "item.user.id === $store.state.user.id"
+                    :src = "getStatusImage(item.status)"
+                    classes = "message-status"
+                />
+              </div>
+            </DynamicScrollerItem>
+          </template>
 
-      <!--      <template #before>
-              <div v-intersect = "onIntersect"/>
-            </template>-->
-    </DynamicScroller>
+          &lt;!&ndash;      <template #before>
+                  <div v-intersect = "onIntersect"/>
+                </template>&ndash;&gt;
+        </DynamicScroller>-->
 
     <!--    <virtual-list
             ref = "vsl"
@@ -136,7 +198,7 @@
         centered
         class = "snackbar"
     >
-      {{ $vuetify.lang.t('$vuetify.FeatureNotReadyYet') }}
+      {{ snackbarMessage || $vuetify.lang.t('$vuetify.FeatureNotReadyYet') }}
     </v-snackbar>
 
     <!--emoji picker plugin-->
@@ -162,6 +224,8 @@ import moment from "moment";
 import MyImage from "@/components/MyImage.vue";
 import User from "@/data/interface/User";
 import {randomMessages} from "@/data/mock/Messages";
+import Notification from "@/data/interface/Notification";
+import axios from "axios";
 
 /*import {TwemojiPicker} from '@kevinfaguiar/vue-twemoji-picker';
 import EmojiAllData from '@kevinfaguiar/vue-twemoji-picker/emoji-data/en/emoji-all-groups.json';
@@ -177,17 +241,24 @@ export default Vue.extend(
       components: {AppBarChat, MyImage},
 
       data: () => ({
-        snackbar: false,
-        message : '',
+        // send message text input model
+        message: '',
 
-        timeout : 0, // timeout id.
-        duration: 2000, // how long user should stay on screen before statues set to unread.
+        snackbar       : false,
+        snackbarMessage: '',
 
-        allLoaded  : false, // scroll event will stop once set to true.
-        loadingMore: false, // set to true when more data is loading.
+        // how long user should stay on screen before message statues set to unread
+        readDuration: 2000,
+        // readTimeout id
+        readTimeout: 0,
 
-        // message timestamp start time set to 1 year earlier:
-        timestampStart: moment().subtract(12, 'months')
+        // number of chats to add on each pagination
+        take: 500,
+        // maximum number of chats to add in store. please note that 100 chats will be loaded on new page load
+        maxChats: 5000,
+
+        // random message insertation -> timestamp set to 1 year earlier:
+        timestampStart: moment().subtract(12, 'months'),
       }),
 
       /*computed: {
@@ -201,46 +272,124 @@ export default Vue.extend(
 
       mounted() {
         // set all unread message to read once user open screen stays for [this.duration] screen:
-        this.timeout = setTimeout(() => {
+        this.readTimeout = setTimeout(() => {
+          // get current authenticated user id, required to set own messages statues to read:
           const user: User = this.$store.state.user;
 
-          this.$store.dispatch('chat/setRead', user.id);
-        }, this.duration);
+          // create notificaiton object before sending:
+          const notification: Notification = {
+            to  : '/topics/all', // topic name.
+            data: {
+              to  : 'updateStatus',
+              chat: {
+                id  : '',
+                user: {
+                  id: user.id
+                }
+              },
+            },
+          };
+
+          // send message via firebase topic, to update read status of message:
+          axios
+              .post('https://fcm.googleapis.com/fcm/send',
+                    notification,
+                    {
+                      headers: {
+                        'Authorization': 'key=AAAAkJpLRbk:APA91bHnXjrDEoIInitUhNCn-yL1igZPJ5MfC6-2wkbvpBx9D3pXSQUbTsWclxVIOxIfqLbJZ-A8b92lqqPuAqoxGZerIFBeiddIG9feJ80rnxn1yqCYPlrO-nxgsTrG_DBE4j1MVJIt'
+                      }
+                    },
+              )
+              .then(response => {
+                console.log('Successfully sent notification: ', response);
+
+                // call store action:
+                this.$store.dispatch('chat/setRead', user.id);
+
+              })
+              .catch((error: any) => {
+                console.log('Error sending notification: ', error);
+              });
+
+          // send notification to update at recipient's side:
+        }, this.readDuration);
 
         console.log('chats: ', {length: this.$store.state.chat.chats?.length});
 
-        // await new Promise((r) => setTimeout(r, 0))
-
-        this.scrollToBottom();
+        // this.scrollToBottom();
       },
 
       beforeDestroy() {
         // clear timeout and don't update message statuses to unread if user doesn't stay for [this.duration] seconds:
-        if (this.timeout) {
-          clearTimeout(this.timeout);
+        if (this.readTimeout) {
+          clearTimeout(this.readTimeout);
         }
       },
 
       methods: {
         // send message function:
         sendMessage() {
-          if (this.message && this.message.length) {
+          if (this.message && this.message.length && this.$route.params.id) {
+            // get current authenticated user:
+            const user: User = this.$store.state.user;
+
+            const targetUserId: string = this.$route.params.id;
+
             // create chat object:
             const chat: Chat = {
               id       : this.uuidv4(),
               message  : this.message,
               timestamp: moment().format('h:mm a'),
               status   : ChatStatus.sent,
-              user     : this.$store.state.user,
+              user     : user,
             };
 
-            // store chats data in vuex store:
-            this.$store.dispatch('chat/pushChat', chat)
-                .then(() => {
-                  this.message = '';
-                  this.scrollToBottom();
+            // create notificaiton object before sending:
+            const notification: Notification = {
+              to          : '/topics/all', // topic name.
+              notification: {
+                title   : user.name + ' sent you a message',
+                body    : this.message,
+                sound   : true,
+                priority: 'high',
+              },
+              data        : {
+                to  : targetUserId, // target user id.
+                chat: chat,
+              },
+            };
 
-                  console.log('sendMessage: ', {length: this.$store.state.chat.chats?.length});
+            // send message via firebase topic, becasuse this app doesn't have backend and database:
+            axios
+                .post('https://fcm.googleapis.com/fcm/send',
+                      notification,
+                      {
+                        headers: {
+                          'Authorization': 'key=AAAAkJpLRbk:APA91bHnXjrDEoIInitUhNCn-yL1igZPJ5MfC6-2wkbvpBx9D3pXSQUbTsWclxVIOxIfqLbJZ-A8b92lqqPuAqoxGZerIFBeiddIG9feJ80rnxn1yqCYPlrO-nxgsTrG_DBE4j1MVJIt'
+                        }
+                      },
+                )
+                .then(response => {
+                  console.log('Successfully sent message: ', response);
+
+                  // store chat data in vuex store:
+                  this.$store.dispatch('chat/pushChat', {id: targetUserId, chat: chat})
+                      .then(async () => {
+                        // reset text input model
+                        this.message = '';
+
+                        console.log('sendMessage: ', {length: this.$store.state.chat.chats?.length});
+
+                        // fix for scroll to bottom not working, wait 100 ms before scrolling to bottom.
+                        await new Promise((r) => setTimeout(r, 100))
+                        this.scrollToBottom();
+                      });
+                })
+                .catch((error: any) => {
+                  // show alert if subscription fails:
+                  console.log('Error sending message: ', error);
+                  this.snackbarMessage = 'Error sending message!';
+                  this.snackbar        = true;
                 });
 
           } else {
@@ -265,7 +414,105 @@ export default Vue.extend(
         },
 
         // handleScroll:
-        handleScroll(e: {target: any;}) {
+        onLoad(index: any, done: () => void) {
+          if (this.$store.state.chat.chats && this.$store.state.chat.chats.length < this.maxChats) {
+            setTimeout(() => {
+              console.log('onLoad: ', this.$store.state.chat.chats.length);
+
+              // get current authenticated user and recipient user:
+              const user: User = this.$store.state.user;
+
+              // get recipient user of this chat thread:
+              const recipientUser: User = {
+                id         : this.$store.state.chat.id,
+                name       : this.$store.state.chat.name,
+                phoneNumber: this.$store.state.chat.phoneNumber,
+                avatar     : this.$store.state.chat.avatar,
+              };
+
+              // generate user list with 100 chats per turn:
+              const chats: Chat[] = [];
+
+              // generate chats with random message, time and user:
+              for (let i = 0; i < this.take; i++) {
+                // get random message from message array:
+                const message: string = randomMessages[Math.floor((Math.random() * randomMessages.length)) | 0];
+
+                // randomly decide if this message is sent by authenticated user or recipient user:
+                const isOwnMessage: boolean = Math.random() < 0.5;
+
+                // prepare chat object:
+                chats[i] = {
+                  id       : this.uuidv4(),
+                  message  : message,
+                  timestamp: this.timestampStart.add(i, 'hours').format('h:mm a'),
+                  status   : ChatStatus.read,
+                  user     : isOwnMessage ? user : recipientUser,
+                }
+              }
+
+              // store chats array in vuex store:
+              this.$store.dispatch('chat/pushChats', chats)
+                  .then(() => {
+                    done();
+
+                    // show toast about how many new chats are added in current thread:
+                    this.snackbarMessage = 'Total messages: ' + this.$store.state.chat.chats?.length;
+                    this.snackbar        = true;
+
+                    console.log('generateChats: ', {length: this.$store.state.chat.chats?.length});
+                  });
+            }, 300);
+          }
+        },
+
+        /*onIntersection(entry: any) {
+          console.log('onIntersection: ', entry.isIntersecting, this.loadingMore);
+
+          if (entry.isIntersecting && !this.loadingMore && this.$store.state.chat.chats?.length < 5000) {
+            setTimeout(() => {
+              // get current authenticated user and recipient user:
+              const user: User          = this.$store.state.user;
+              const recipientUser: User = {
+                id         : this.$store.state.chat.id,
+                name       : this.$store.state.chat.name,
+                phoneNumber: this.$store.state.chat.phoneNumber,
+                avatar     : this.$store.state.chat.avatar,
+              };
+
+              // generate user list with 100 chats per turn:
+              const chats: Chat[] = [];
+
+              // generate chats with random message, time and user:
+              for (let i = 0; i < 500; i++) {
+                const message: string = randomMessages[Math.floor((Math.random() * randomMessages.length)) | 0];
+
+                // randomly decide if this message is sent by authenticated user or other user:
+                const isOwnMessage: boolean = Math.random() < 0.5;
+
+                chats[i] = {
+                  id       : this.uuidv4(),
+                  message  : message,
+                  timestamp: this.timestampStart.add(i, 'hours').format('h:mm a'),
+                  status   : ChatStatus.read,
+                  user     : isOwnMessage ? user : recipientUser,
+                }
+              }
+
+              // store chats data in vuex store:
+              this.$store.dispatch('chat/pushChats', chats)
+                  .then(() => {
+                    this.loadingMore = false;
+
+                    console.log('generateChats: ', {chats});
+                    console.log('generateChats: ', {length: this.$store.state.chat.chats?.length});
+                  });
+            }, 500)
+          }
+        },*/
+
+        // handleScroll:
+        /*handleScroll(e: {target: any;}) {
           // onIntersect(e: any) {
 
           // stop adding new chats once it reaches 5000:
@@ -280,10 +527,10 @@ export default Vue.extend(
               this.generateChats();
             }
           }
-        },
+        },*/
 
         // generate conversation of 100 per turn:
-        generateChats() {
+        /*generateChats() {
           this.loadingMore = true;
 
           // get current authenticated user and recipient user:
@@ -323,15 +570,15 @@ export default Vue.extend(
 
                 // delay for 3 second before receiving next scroll event::
                 // setTimeout(() => {
-                  this.loadingMore = false;
+                this.loadingMore = false;
                 // }, 3000);
 
                 console.log('generateChats: ', {chats});
                 console.log('generateChats: ', {length: this.$store.state.chat.chats?.length});
               });
-        },
+        },*/
 
-        // generate random uuid for new user:
+        // generate random uuid:
         uuidv4() {
           return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -341,11 +588,7 @@ export default Vue.extend(
 
         // scroll to bottom of screen:
         scrollToBottom() {
-          if (this.$refs.scroller) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.$refs.scroller?.scrollToBottom({behavior: 'smooth'});
-          }
+          window.scrollTo({top: document.body.scrollHeight || document.documentElement.scrollHeight, behavior: 'smooth'});
         },
       }
     })
@@ -354,124 +597,139 @@ export default Vue.extend(
 <style lang = "scss">
 .chat-screen {
   background-color : #F3EDE7;
+  height           : 100%;
 }
 
 .my-list {
-  height         : calc(100vh - 56px); // 56px = top tab bar height.
-  //height     : 100%;
+  //height         : 100vh; // 56px = top tab bar height.
+  margin-top     : 56px; // 56px
+  padding        : 0 16px 6px; // top header fixed size. and bottom text input section.
 
-  margin-top     : 56px;
-  padding-bottom : 60px; // top header fixed size. and bottom text input section.
+  display        : flex;
+  flex-direction : column;
+  align-items    : flex-start;
 
-  .vue-recycle-scroller__item-view {
-    padding : 0 16px;
+  .q-infinite-scroll__loading {
+    margin : 0 auto;
 
-    .message-container {
-      display     : block;
-
-      line-height : 1; // fix for vuetify.
-      min-height  : auto;
-
-      padding     : 7px 12px;
-      margin      : 1.5px 0;
-      max-width   : 90%;
-
-      filter      : drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.20)); // for shape shadow.
-
-      .message {
-        display     : inline-block;
-
-        font-size   : 16px;
-        line-height : 1.25;
-      }
-
-      .message-time-status {
-        display     : inline-block;
-        float       : right;
-        position    : relative;
-        bottom      : -4px;
-
-        line-height : 1.25; // fix for vuetify.
-        margin-left : 10px;
-
-        .message-time {
-          display   : inline-block;
-
-          font-size : 13px;
-        }
-
-        .message-status {
-          display     : inline-block;
-
-          width       : 16px;
-          max-width   : 16px;
-
-          object-fit  : contain;
-
-          margin-left : 5px;
-        }
-      }
+    .list-loader {
+      padding : 12px;
     }
 
-    // differences for received chat message: background color and time text color:
-    .received {
-      float            : left;
-      background-color : white;
-      border-radius    : 0px 5px 5px 5px;
+    .title-loading {
+      padding    : 12px 10px 6px;
+      text-align : center;
+    }
+  }
 
-      .message-message {
-        color : #121B21;
-      }
+  //.q-virtual-scroll__content {
+
+  .message-container {
+    display     : block;
+
+    line-height : 1; // fix for vuetify.
+    min-height  : auto;
+
+    padding     : 7px 12px;
+    margin      : 1.5px 0;
+    max-width   : 90%;
+
+    filter      : drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.20)); // for shape shadow.
+
+    .message {
+      display     : inline-block;
+
+      font-size   : 16px;
+      line-height : 1.25;
+    }
+
+    .message-time-status {
+      display     : inline-block;
+      float       : right;
+      position    : relative;
+      bottom      : -4px;
+
+      line-height : 1.25; // fix for vuetify.
+      margin-left : 10px;
 
       .message-time {
-        color : #69767F;
+        display   : inline-block;
+
+        font-size : 13px;
+      }
+
+      .message-status {
+        display     : inline-block;
+
+        width       : 16px;
+        max-width   : 16px;
+
+        object-fit  : contain;
+
+        margin-left : 5px;
       }
     }
+  }
 
-    // differences for own chat message: background color and time text color:
-    .sent {
-      float            : right;
-      background-color : #E7FFDC;
-      border-radius    : 5px 0px 5px 5px;
+  // differences for received chat message: background color and time text color:
+  .received {
+    //float            : left;
+    background-color : white;
+    border-radius    : 0px 5px 5px 5px;
 
-      .message-message {
-        color : black;
-      }
-
-      .message-time {
-        color : #667978;
-      }
+    .message-message {
+      color : #121B21;
     }
 
-    // add extra top margin if messages are not from same person:
-    .message-container-margin {
-      margin-top : 8px;
+    .message-time {
+      color : #69767F;
+    }
+  }
 
-      // top arrow shape, for both left and right component:
-      // idea taken from: https://codepen.io/swaibu/pen/YjrPVJ
-      &:after {
-        position     : absolute;
-        content      : "";
-        width        : 0;
-        height       : 0;
-        border-style : solid;
-      }
+  // differences for own chat message: background color and time text color:
+  .sent {
+    //float            : right;
+    align-self       : flex-end;
+    background-color : #E7FFDC;
+    border-radius    : 5px 0px 5px 5px;
 
-      // top arrow shape for received component:
-      &.received:after {
-        border-width : 0px 10px 10px 0;
-        border-color : transparent #fff transparent transparent;
-        top          : 0;
-        left         : -10px;
-      }
+    .message-message {
+      color : black;
+    }
 
-      // top arrow shape for sent component:
-      &.sent:after {
-        border-width : 0px 0 10px 10px;
-        border-color : transparent transparent transparent #e1ffc7;
-        top          : 0;
-        right        : -10px;
-      }
+    .message-time {
+      color : #667978;
+    }
+  }
+
+  // add extra top margin if messages are not from same person:
+  .message-container-margin {
+    margin-top : 8px;
+
+    // top arrow shape, for both left and right component:
+    // idea taken from: https://codepen.io/swaibu/pen/YjrPVJ
+    &:after {
+      position     : absolute;
+      content      : "";
+      width        : 0;
+      height       : 0;
+      border-style : solid;
+    }
+
+    // top arrow shape for received component:
+    &.received:after {
+      border-width : 0px 10px 10px 0;
+      border-color : transparent #fff transparent transparent;
+      top          : 0;
+      left         : -10px;
+    }
+
+    // top arrow shape for sent component:
+    &.sent:after {
+      border-width : 0px 0 10px 10px;
+      border-color : transparent transparent transparent #e1ffc7;
+      top          : 0;
+      right        : -10px;
     }
   }
 }
@@ -493,6 +751,7 @@ export default Vue.extend(
     align-items      : center;
 
     flex             : 1;
+    width            : 80%;
     //max-width        : calc(100% - 57px);
 
     background-color : white;
@@ -520,6 +779,7 @@ export default Vue.extend(
     input {
       flex        : 1;
       //max-width   : calc(100% - 57px);
+      overflow    : hidden; // fix for input taking too much space.
 
       margin-left : 4px;
 

@@ -97,6 +97,8 @@ export default Vue.extend(
 
       data: () => ({
         snackbar: false,
+
+        // top right corner settings btn items:
         settings: [
           {title: 'NewGroup'},
           {title: 'NewBroadcast'},

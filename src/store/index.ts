@@ -18,7 +18,7 @@ const modules = {
 // selective persisted state:
 const persistedState = createPersistedState(
     {
-        paths: ['user', 'chats', 'chat']
+        paths: ['user', 'chats']
     });
 
 export interface StateInterface {
