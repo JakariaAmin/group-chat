@@ -28,7 +28,7 @@ The application can be opened in 2 different browsers. Both browser windows can 
 
 ## Demo
 
-Netlify: https://condescending-curran-3c6529.netlify.app
+Netlify: https://vuejs2-whatsapp-clone.netlify.app
 
 ## How to use
 
